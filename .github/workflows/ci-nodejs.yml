@@ -4,30 +4,28 @@ on:
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-        with :
+        with:
           repository: PXL-2TIN-DevOps-Resources/calculator-app-finished
 
-      - name: Install Node.js
-        run: |
-          sudo apt install -y nodejs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
 
-      - name: Install dependancies
-        run: |
-          sudo apt install -y npm
-          sudo npm install
-          
-      - name: Test
-        run: |
-          sudo npm test --coverage
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests with coverage
+        run: npm test -- --coverage
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
           name: app-package
-          path: coverage/*.jar
+          path: coverage/
