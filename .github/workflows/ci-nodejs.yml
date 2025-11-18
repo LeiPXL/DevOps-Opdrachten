@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
     branches: [ "main" ]
-
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,7 +27,7 @@ jobs:
           sudo npm test --coverage
 
       - name: Archive artifacts
-        uses: actions/upload-artifacts@v4
+        uses: actions/upload-artifact@v4
         with:
           name: app-package
           path: coverage
