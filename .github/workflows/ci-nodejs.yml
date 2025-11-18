@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with :
+          repository: PXL-2TIN-DevOps-Resources/calculator-app-finished
+
+      - name: Install Node.js
+        run: |
+          sudo apt install -y node.js
+
+      - name: Install dependancies
+        run: |
+          sudo apt install -y npm
+          sudo npm install
+          
+      - name: Test
+        run: |
+          sudo npm test --coverage
+
+      - name: Archive artifacts
+        uses: actions/upload-artifacts@v4
+        with:
+          name: app-package
+          path: coverage
