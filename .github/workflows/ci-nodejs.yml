@@ -30,4 +30,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-package
-          path: coverage/
+          path: coverage/*.jar
