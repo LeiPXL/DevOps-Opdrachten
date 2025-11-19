@@ -36,15 +36,15 @@ jobs:
       - name: Set Docker tag
         id: vars
         run: |
-          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            "TAG=${GITHUB_REF_NAME}"
-          elif [[ "${GITHUB_REF_NAME}" == "main" ]]; then
-            "TAG=latest"
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            TAG="$GITHUB_REF_NAME"
+          elif [[ "$GITHUB_REF_NAME" == "main" ]]; then
+            TAG="latest"
           else
-            # fallback voor andere branches
-            "TAG=dev"
-            fi
-            echo "tag=$TAG" >> $GITHUB_OUTPUT
+            TAG="dev"
+          fi
+      
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
       
       - name: Build and push
         uses: docker/build-push-action@v6
