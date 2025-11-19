@@ -1,0 +1,59 @@
+name: CI
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: PXL-2TIN-DevOps-Resources/calculator-app-finished
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERUSERNAME }}
+          password: ${{ secrets.DOCKERACCESTOKEN }}
+      
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests with coverage
+        run: npm test -- --coverage
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-package
+          path: coverage/
+          
+      - name: Set Docker tag
+        id: vars
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            "TAG=${GITHUB_REF_NAME}"
+          elif [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+            "TAG=latest"
+          else
+            # fallback voor andere branches
+            "TAG=dev"
+            fi
+            echo "tag=$TAG" >> $GITHUB_OUTPUT
+      
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ${{ secrets.DOCKERUSERNAME }}/calculator-app:${{ steps.vars.outputs.tag }}
+
+      - name: CVE Scan with Docker Scout
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: ${{ secrets.DOCKERUSERNAME }}/calculator-app:${{ steps.vars.outputs.tag }}
+        
