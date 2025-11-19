@@ -1,5 +1,6 @@
-name: CI
+name: CI-Docker
 
+on:
   workflow_dispatch:
 
 jobs:
